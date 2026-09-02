@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chance</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a1a; color: #fff; min-height: 100vh; padding: 12px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; margin-bottom: 12px; }
+        .header .back { color: #fff; font-size: 24px; cursor: pointer; }
+        .header .title { font-size: 18px; font-weight: bold; color: #ff6b6b; }
+        .header .online { font-size: 12px; color: #4ade80; }
+        .balance-bar { background: #1a1a2e; border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .balance-bar .amount { font-size: 20px; font-weight: bold; }
+        .balance-bar .amount span { font-size: 14px; color: #aaa; font-weight: normal; }
+        .balance-bar .actions button { background: #2d2d5e; border: none; color: #fff; padding: 4px 12px; border-radius: 6px; margin-left: 6px; font-size: 12px; cursor: pointer; }
+        .game-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .game-card { background: #1a1a2e; border-radius: 12px; padding: 16px 8px; text-align: center; cursor: pointer; transition: 0.2s; border: 1px solid #2d2d5e; }
+        .game-card:active { transform: scale(0.95); }
+        .game-card .icon { font-size: 28px; display: block; }
+        .game-card .name { font-size: 13px; font-weight: bold; margin-top: 4px; }
+        .game-card .online { font-size: 11px; color: #4ade80; }
+        .bottom-nav { display: flex; justify-content: space-around; background: #1a1a2e; border-radius: 16px; padding: 10px 0; margin-top: 8px; position: fixed; bottom: 0; left: 0; right: 0; max-width: 420px; margin: 0 auto; }
+        .bottom-nav .item { text-align: center; font-size: 11px; color: #888; cursor: pointer; padding: 4px 8px; }
+        .bottom-nav .item.active { color: #ff6b6b; }
+        .bottom-nav .item .icon { font-size: 20px; display: block; }
+        .bet-area { background: #1a1a2e; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+        .bet-area .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .bet-area .label { color: #aaa; font-size: 13px; }
+        .bet-area .value { font-size: 16px; font-weight: bold; }
+        .bet-area .multipliers { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+        .bet-area .multipliers .m { background: #2d2d5e; padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+        .bet-area .multipliers .m.active { background: #ff6b6b; }
+        .btn-play { width: 100%; padding: 14px; background: #ff6b6b; border: none; border-radius: 12px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn-play:active { transform: scale(0.97); }
+        .btn-demo { width: 100%; padding: 10px; background: #2d2d5e; border: none; border-radius: 12px; color: #fff; font-size: 14px; cursor: pointer; margin-top: 8px; }
+        .history { background: #1a1a2e; border-radius: 12px; padding: 12px; margin-top: 12px; }
+        .history .item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #2d2d5e; font-size: 13px; }
+        .history .item .win { color: #4ade80; }
+        .history .item .lose { color: #ff6b6b; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <span class="back" onclick="closeApp()">‹</span>
+        <span class="title">Chance</span>
+        <span class="online">● 71 Онлайн</span>
+    </div>
+    <div class="balance-bar">
+        <div class="amount">119.73 ₽ <span>+ 0.011</span></div>
+        <div class="actions"><button>Закрыть</button><button>20x</button></div>
+    </div>
+    <div class="game-grid">
+        <div class="game-card" onclick="playGame('Chance')"><span class="icon">🎲</span><div class="name">Chance</div><div class="online">● 71 Онлайн</div></div>
+        <div class="game-card" onclick="playGame('Rocket')"><span class="icon">🚀</span><div class="name">Rocket</div><div class="online">● 70 Онлайн</div></div>
+        <div class="game-card" onclick="playGame('Plinko')"><span class="icon">🔴</span><div class="name">Plinko</div><div class="online">● 17 Онлайн</div></div>
+        <div class="game-card" onclick="playGame('Arena')"><span class="icon">⚔️</span><div class="name">Arena</div><div class="online">● 21 Онлайн</div></div>
+        <div class="game-card" onclick="playGame('Upgrade')"><span class="icon">📈</span><div class="name">Upgrade</div><div class="online">● 78 Онлайн</div></div>
+        <div class="game-card" onclick="playGame('Plane')"><span class="icon">✈️</span><div class="name">Plane</div><div class="online">● 48 Онлайн</div></div>
+    </div>
+    <div class="bet-area">
+        <div class="row"><span class="label">Ставка</span><span class="value">0.011 ₽</span></div>
+        <div class="multipliers"><span class="m">1.02x</span><span class="m">1.00x</span><span class="m active">23.12x</span><span class="m">1.75x</span><span class="m">1.74x</span><span class="m">1.06x</span></div>
+        <button class="btn-play" onclick="playGame('Chance')">Сделать ставку</button>
+        <button class="btn-demo">🎮 Демо</button>
+    </div>
+    <div class="history">
+        <div class="item"><span>Helen 🎉</span><span class="win">+0.82 8.21x</span></div>
+        <div class="item"><span>Evgeniy</span><span class="win">+7</span></div>
+        <div class="item"><span>Ставок пока нет</span><span>—</span></div>
+    </div>
+    <div class="bottom-nav">
+        <div class="item active"><span class="icon">🏠</span>Главная</div>
+        <div class="item"><span class="icon">🎒</span>Инвентарь</div>
+        <div class="item"><span class="icon">🎁</span>Награды</div>
+        <div class="item"><span class="icon">🏆</span>Лидеры</div>
+    </div>
+</div>
+<script>
+    const tg = window.Telegram?.WebApp;
+    function closeApp() { if (tg) tg.close(); }
+    function playGame(name) {
+        if (tg) {
+            tg.sendData(JSON.stringify({ action: 'game', game: name, bet: 0.011, multiplier: 23.12 }));
+            tg.close();
+        } else { alert('🎮 ' + name); }
+    }
+    if (tg) { tg.ready(); tg.expand(); }
+</script>
+</body>
+</html>
